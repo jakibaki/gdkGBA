@@ -1,4 +1,9 @@
 # gdkGBA
+
+## This is the nintendo-switch port!
+
+The bios bundled bios is Normmatt's open-source GBA BIOS replacement
+
 GBA emulator written in C
 
 This is a Gameboy Advance emulator written in C. It's in early stages of development, but most games should work.

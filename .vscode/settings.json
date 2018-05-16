@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "sound.h": "c",
+        "inet.h": "c",
+        "socket.h": "c",
+        "sdl.h": "c",
+        "stdlib.h": "c",
+        "arm.h": "c",
+        "arm_mem.h": "c"
+    }
+}

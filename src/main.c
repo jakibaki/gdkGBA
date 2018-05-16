@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <switch.h>
 #include "arm.h"
 #include "arm_mem.h"
 
@@ -23,21 +23,17 @@ static uint32_t to_pow2(uint32_t val) {
 }
 
 int main(int argc, char* argv[]) {
+    consoleDebugInit(debugDevice_SVC);
+    stdout = stderr;
     printf("gdkGBA - Gameboy Advance emulator made by gdkchan\n");
     printf("This is FREE software released into the PUBLIC DOMAIN\n\n");
 
     arm_init();
 
-    if (argc < 2) {
-        printf("Error: Invalid number of arguments!\n");
-        printf("Please specify a ROM file.\n");
-
-        return 0;
-    }
 
     FILE *image;
 
-    image = fopen("gba_bios.bin", "rb");
+    image = fopen("/gba_bios.bin", "rb");
 
     if (image == NULL) {
         printf("Error: GBA BIOS not found!\n");
@@ -50,7 +46,7 @@ int main(int argc, char* argv[]) {
 
     fclose(image);
 
-    image = fopen(argv[1], "rb");
+    image = fopen("/switch/roms/rom.gba", "rb");
 
     if (image == NULL) {
         printf("Error: ROM file couldn't be opened.\n");
