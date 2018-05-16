@@ -6,6 +6,7 @@
         "sdl.h": "c",
         "stdlib.h": "c",
         "arm.h": "c",
-        "arm_mem.h": "c"
+        "arm_mem.h": "c",
+        "video.h": "c"
     }
 }

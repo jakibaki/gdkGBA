@@ -1,5 +1,6 @@
 #include "sdl.h"
 #include "sound.h"
+#include <switch.h>
 
 void sdl_init() {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
@@ -29,6 +30,10 @@ void sdl_init() {
 
     SDL_OpenAudio(&spec, NULL);
     SDL_PauseAudio(0);
+
+    SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+    SDL_JoystickEventState(SDL_ENABLE);
+    SDL_JoystickOpen(0);
 }
 
 void sdl_uninit() {

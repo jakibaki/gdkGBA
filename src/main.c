@@ -8,6 +8,31 @@
 #include "sdl.h"
 #include "video.h"
 
+#define JOY_A 0
+#define JOY_B 1
+#define JOY_X 2
+#define JOY_Y 3
+#define JOY_LSTICK 4
+#define JOY_RSTICK 5
+#define JOY_L 6
+#define JOY_R 7
+#define JOY_ZL 8
+#define JOY_ZR 9
+#define JOY_PLUS 10
+#define JOY_MINUS 11
+#define JOY_DLEFT 12
+#define JOY_DUP 13
+#define JOY_DRIGHT 14
+#define JOY_DDOWN 15
+#define JOY_LSTICK_LEFT 16
+#define JOY_LSTICK_UP 17
+#define JOY_LSTICK_RIGHT 18
+#define JOY_LSTICK_DOWN 19
+#define JOY_RSTICK_LEFT 20
+#define JOY_RSTICK_UP 21
+#define JOY_RSTICK_RIGHT 22
+#define JOY_RSTICK_DOWN 23
+
 const int64_t max_rom_sz = 32 * 1024 * 1024;
 
 static uint32_t to_pow2(uint32_t val) {
@@ -79,36 +104,44 @@ int main(int argc, char* argv[]) {
 
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
-                case SDL_KEYDOWN:
-                    switch (event.key.keysym.sym) {
-                        case SDLK_UP:     key_input.w &= ~BTN_U;   break;
-                        case SDLK_DOWN:   key_input.w &= ~BTN_D;   break;
-                        case SDLK_LEFT:   key_input.w &= ~BTN_L;   break;
-                        case SDLK_RIGHT:  key_input.w &= ~BTN_R;   break;
-                        case SDLK_a:      key_input.w &= ~BTN_A;   break;
-                        case SDLK_s:      key_input.w &= ~BTN_B;   break;
-                        case SDLK_q:      key_input.w &= ~BTN_LT;  break;
-                        case SDLK_w:      key_input.w &= ~BTN_RT;  break;
-                        case SDLK_TAB:    key_input.w &= ~BTN_SEL; break;
-                        case SDLK_RETURN: key_input.w &= ~BTN_STA; break;
-                        default:                                   break;
-                    }
+                case SDL_JOYBUTTONDOWN:
+                switch (event.jbutton.button) {
+                    case JOY_DUP:           key_input.w &= ~BTN_U;   break;
+                    case JOY_LSTICK_UP:     key_input.w &= ~BTN_U;   break;
+                    case JOY_DDOWN:         key_input.w &= ~BTN_D;   break;
+                    case JOY_LSTICK_DOWN:   key_input.w &= ~BTN_D;   break;
+                    case JOY_DLEFT:         key_input.w &= ~BTN_L;   break;
+                    case JOY_LSTICK_LEFT:   key_input.w &= ~BTN_L;   break;
+                    case JOY_DRIGHT:        key_input.w &= ~BTN_R;   break;
+                    case JOY_LSTICK_RIGHT:  key_input.w &= ~BTN_R;   break;
+                    case JOY_A:             key_input.w &= ~BTN_A;   break;
+                    case JOY_B:             key_input.w &= ~BTN_B;   break;
+                    case JOY_L:             key_input.w &= ~BTN_LT;  break;
+                    case JOY_R:             key_input.w &= ~BTN_RT;  break;
+                    case JOY_MINUS:         key_input.w &= ~BTN_SEL; break;
+                    case JOY_PLUS:          key_input.w &= ~BTN_STA; break;
+                    default:  break;
+                }
                 break;
 
-                case SDL_KEYUP:
-                    switch (event.key.keysym.sym) {
-                        case SDLK_UP:     key_input.w |= BTN_U;   break;
-                        case SDLK_DOWN:   key_input.w |= BTN_D;   break;
-                        case SDLK_LEFT:   key_input.w |= BTN_L;   break;
-                        case SDLK_RIGHT:  key_input.w |= BTN_R;   break;
-                        case SDLK_a:      key_input.w |= BTN_A;   break;
-                        case SDLK_s:      key_input.w |= BTN_B;   break;
-                        case SDLK_q:      key_input.w |= BTN_LT;  break;
-                        case SDLK_w:      key_input.w |= BTN_RT;  break;
-                        case SDLK_TAB:    key_input.w |= BTN_SEL; break;
-                        case SDLK_RETURN: key_input.w |= BTN_STA; break;
-                        default:                                  break;
-                    }
+                case SDL_JOYBUTTONUP:
+                switch (event.jbutton.button) {
+                    case JOY_DUP:           key_input.w |= BTN_U;   break;
+                    case JOY_LSTICK_UP:     key_input.w |= BTN_U;   break;
+                    case JOY_DDOWN:         key_input.w |= BTN_D;   break;
+                    case JOY_LSTICK_DOWN:   key_input.w |= BTN_D;   break;
+                    case JOY_DLEFT:         key_input.w |= BTN_L;   break;
+                    case JOY_LSTICK_LEFT:   key_input.w |= BTN_L;   break;
+                    case JOY_DRIGHT:        key_input.w |= BTN_R;   break;
+                    case JOY_LSTICK_RIGHT:  key_input.w |= BTN_R;   break;
+                    case JOY_A:             key_input.w |= BTN_A;   break;
+                    case JOY_B:             key_input.w |= BTN_B;   break;
+                    case JOY_L:             key_input.w |= BTN_LT;  break;
+                    case JOY_R:             key_input.w |= BTN_RT;  break;
+                    case JOY_MINUS:         key_input.w |= BTN_SEL; break;
+                    case JOY_PLUS:          key_input.w |= BTN_STA; break;
+                    default:  break;
+                }
                 break;
 
                 case SDL_QUIT: run = false; break;
