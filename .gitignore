@@ -53,3 +53,7 @@ dkms.conf
 # GBA ROMs
 *.gba
 *.bin
+
+# OS-Files
+._*
+.DS_STORE
