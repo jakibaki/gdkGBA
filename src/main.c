@@ -58,7 +58,7 @@ int getInd(char* curFile, int curIndex) {
     if(curIndex < 0)
         curIndex = 0;
     
-    dir = opendir("/switch/roms");//Open current-working-directory.
+    dir = opendir("/switch/roms/gba");//Open current-working-directory.
     if(dir==NULL)
     {
         sprintf(curFile, "Failed to open dir!");
@@ -71,7 +71,7 @@ int getInd(char* curFile, int curIndex) {
             ent = readdir(dir);
         }
         if(ent)
-            sprintf(curFile ,"/switch/roms/%s", ent->d_name);
+            sprintf(curFile ,"/switch/roms/gba/%s", ent->d_name);
         else
             curIndex--;
         closedir(dir);
