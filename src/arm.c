@@ -3,7 +3,7 @@
 
 #include "arm.h"
 #include "arm_mem.h"
-
+#include "sound.h"
 #include "dma.h"
 
 #include "io.h"
@@ -3217,6 +3217,14 @@ void arm_save(char* filename) {
     fwrite(&snd_fifo_b_2, sizeof(int8_t), 1, out);
     fwrite(&snd_fifo_b_3, sizeof(int8_t), 1, out);
 
+    fwrite(fifo_a, sizeof(int8_t), 0, out);
+    fwrite(fifo_b, sizeof(int8_t), 0, out);
+    fwrite(&fifo_a_len, sizeof(uint8_t), 1, out);
+    fwrite(&fifo_b_len, sizeof(uint8_t), 1, out);
+    fwrite(snd_ch_state, sizeof(snd_ch_state_t), 4, out);
+    fwrite(&wave_position, sizeof(uint8_t), 1, out);
+    fwrite(&wave_samples, sizeof(uint8_t), 1, out);
+
     fclose(out);
 }
 
@@ -3299,6 +3307,13 @@ void arm_load(char* filename) {
     fread(&snd_fifo_b_2, sizeof(int8_t), 1, in);
     fread(&snd_fifo_b_3, sizeof(int8_t), 1, in);
 
+    fread(fifo_a, sizeof(int8_t), 0, in);
+    fread(fifo_b, sizeof(int8_t), 0, in);
+    fread(&fifo_a_len, sizeof(uint8_t), 1, in);
+    fread(&fifo_b_len, sizeof(uint8_t), 1, in);
+    fread(snd_ch_state, sizeof(snd_ch_state_t), 4, in);
+    fread(&wave_position, sizeof(uint8_t), 1, in);
+    fread(&wave_samples, sizeof(uint8_t), 1, in);
 
     fclose(in);
 }
