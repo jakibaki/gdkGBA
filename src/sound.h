@@ -1,7 +1,7 @@
 #include <stdbool.h>
 
 #define CPU_FREQ_HZ       16777216
-#define SND_FREQUENCY     32768
+#define SND_FREQUENCY     48000
 #define SND_CHANNELS      2
 #define SND_SAMPLES       512
 #define SAMP_CYCLES       (CPU_FREQ_HZ / SND_FREQUENCY)
