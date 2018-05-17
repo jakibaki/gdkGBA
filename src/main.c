@@ -7,6 +7,8 @@
 #include "io.h"
 #include "sdl.h"
 #include "video.h"
+
+#include <dirent.h>
 #include <switch.h>
 
 #define JOY_A 0
@@ -48,20 +50,113 @@ static uint32_t to_pow2(uint32_t val) {
     return val + 1;
 }
 
+int getInd(char* curFile, int curIndex) {
+    DIR* dir;
+    struct dirent* ent;
+
+
+    if(curIndex < 0)
+        curIndex = 0;
+    
+    dir = opendir("/switch/roms");//Open current-working-directory.
+    if(dir==NULL)
+    {
+        sprintf(curFile, "Failed to open dir!");
+        return curIndex;
+    }
+    else
+    {
+        int i;
+        for(i = 0; i <= curIndex; i++) {
+            ent = readdir(dir);
+        }
+        if(ent)
+            sprintf(curFile ,"/switch/roms/%s", ent->d_name);
+        else
+            curIndex--;
+        closedir(dir);
+    }
+    return curIndex;
+}
+
+void getFile(char* curFile)
+{
+ 
+    gfxInitDefault();
+
+    //Initialize console. Using NULL as the second argument tells the console library to use the internal console structure as current one.
+    consoleInit(NULL);
+
+    //Move the cursor to row 16 and column 20 and then prints "Hello World!"
+    //To move the cursor you have to print "\x1b[r;cH", where r and c are respectively
+    //the row and column where you want your cursor to move
+    printf("\x1b[16;20HSelect a file using the up and down keys.");
+    printf("\x1b[17;20HPress start to run the rom.");
+
+    sprintf(curFile, "Couldn't find any files in that folder!");
+    int curIndex = 0;
+
+    curIndex = getInd(curFile, curIndex);
+    printf("\x1b[18;20H%s", curFile);
+    while(appletMainLoop())
+    {
+        //Scan all the inputs. This should be done once for each frame
+        hidScanInput();
+
+        //hidKeysDown returns information about which buttons have been just pressed (and they weren't in the previous frame)
+        u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+
+        if (kDown & KEY_DOWN || kDown & KEY_DDOWN) {
+            consoleClear();
+            printf("\x1b[16;20HSelect a file using the up and down keys.");
+            printf("\x1b[17;20HPress start to run the rom.");
+            curIndex++;
+            curIndex = getInd(curFile, curIndex);
+            printf("\x1b[18;20H%s", curFile);
+        }
+
+        if (kDown & KEY_UP || kDown & KEY_DUP) {
+            consoleClear();
+            printf("\x1b[16;20HSelect a file using the up and down keys.");
+            printf("\x1b[17;20HPress start to run the rom.");
+            curIndex--;
+            curIndex = getInd(curFile, curIndex);
+            printf("\x1b[18;20H%s", curFile);
+        }
+
+
+        if (kDown & KEY_PLUS || kDown & KEY_A) {
+            
+            break;
+        }  
+        gfxFlushBuffers();
+        gfxSwapBuffers();
+        gfxWaitForVsync();
+    }
+    
+    
+    consoleClear();
+    gfxExit();
+}
+
+
+
 int main(int argc, char* argv[]) {
-    printf("gdkGBA - Gameboy Advance emulator made by gdkchan\n");
-    printf("This is FREE software released into the PUBLIC DOMAIN\n\n");
+    
+    char filename[100];
+    char savegamepath[110];
+    getFile(filename);
+    sprintf(savegamepath, "%s.savegame", filename);
 
     arm_init();
+    sdl_init();
 
 
-    FILE *image;
 
- 
     memcpy(bios, gba_bios, 16384);
 
 
-    image = fopen("/switch/roms/gbarom.gba", "rb");
+    FILE* image = fopen(filename, "rb");
 
     if (image == NULL) {
         printf("Error: ROM file couldn't be opened.\n");
@@ -82,10 +177,10 @@ int main(int argc, char* argv[]) {
 
     fclose(image);
 
-    sdl_init();
     arm_reset();
 
     bool run = true;
+    bool startDown = false;
 
     while (run) {
         run_frame();
@@ -106,10 +201,21 @@ int main(int argc, char* argv[]) {
                     case JOY_LSTICK_RIGHT:  key_input.w &= ~BTN_R;   break;
                     case JOY_A:             key_input.w &= ~BTN_A;   break;
                     case JOY_B:             key_input.w &= ~BTN_B;   break;
-                    case JOY_L:             key_input.w &= ~BTN_LT;  break;
-                    case JOY_R:             key_input.w &= ~BTN_RT;  break;
+                    case JOY_ZL:
+                    case JOY_L:             
+                        if(startDown)
+                            arm_load(savegamepath);
+                        key_input.w &= ~BTN_LT;  
+                        break;
+                    case JOY_ZR:
+                    case JOY_R:           
+                        if(startDown)
+                            arm_save(savegamepath);
+                        else
+                            key_input.w &= ~BTN_RT;  
+                        break;
                     case JOY_MINUS:         key_input.w &= ~BTN_SEL; break;
-                    case JOY_PLUS:          key_input.w &= ~BTN_STA; break;
+                    case JOY_PLUS:          key_input.w &= ~BTN_STA; startDown = true; break;
                     default:  break;
                 }
                 break;
@@ -126,12 +232,12 @@ int main(int argc, char* argv[]) {
                     case JOY_LSTICK_RIGHT:  key_input.w |= BTN_R;   break;
                     case JOY_A:             key_input.w |= BTN_A;   break;
                     case JOY_B:             key_input.w |= BTN_B;   break;
-                    case JOY_X:             arm_save("/test.sav");  break;
-                    case JOY_Y:             arm_load("/test.sav");  break;
+                    case JOY_ZL:
                     case JOY_L:             key_input.w |= BTN_LT;  break;
+                    case JOY_ZR:
                     case JOY_R:             key_input.w |= BTN_RT;  break;
                     case JOY_MINUS:         key_input.w |= BTN_SEL; break;
-                    case JOY_PLUS:          key_input.w |= BTN_STA; break;
+                    case JOY_PLUS:          key_input.w |= BTN_STA; startDown = false; break;
                     default:  break;
                 }
                 break;
