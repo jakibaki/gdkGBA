@@ -35,7 +35,7 @@ SOURCES		:=	src
 DATA		:=	dat
 INCLUDES	:=	include
 EXEFS_SRC	:=	exefs_src
-ROMFS       :=  data
+ROMFS       :=  romfs
 
 APP_TITLE   := gdkGBA
 APP_AUTHOR  := gdkchan (ported by jakibaki)

@@ -6,7 +6,8 @@ void sdl_init() {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
     //window   = SDL_CreateWindow("gdkGBA", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 480, 320, 0);
-    window = SDL_CreateWindow("sdl2+mixer+image demo", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 480, 320, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 240, 160, SDL_WINDOW_FULLSCREEN);
+    //SDL_CreateWindow("sdl2+mixer+image demo", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 240, 160, SDL_WINDOW_SHOWN);
 
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);

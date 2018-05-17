@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <switch.h>
 #include "arm.h"
 #include "arm_mem.h"
+#include "bios.h"
 
 #include "io.h"
 #include "sdl.h"
 #include "video.h"
+#include <switch.h>
 
 #define JOY_A 0
 #define JOY_B 1
@@ -48,8 +49,6 @@ static uint32_t to_pow2(uint32_t val) {
 }
 
 int main(int argc, char* argv[]) {
-    consoleDebugInit(debugDevice_SVC);
-    stdout = stderr;
     printf("gdkGBA - Gameboy Advance emulator made by gdkchan\n");
     printf("This is FREE software released into the PUBLIC DOMAIN\n\n");
 
@@ -58,20 +57,11 @@ int main(int argc, char* argv[]) {
 
     FILE *image;
 
-    image = fopen("/gba_bios.bin", "rb");
+ 
+    memcpy(bios, gba_bios, 16384);
 
-    if (image == NULL) {
-        printf("Error: GBA BIOS not found!\n");
-        printf("Place it on this directory with the name \"gba_bios.bin\".\n");
 
-        return 0;
-    }
-
-    fread(bios, 16384, 1, image);
-
-    fclose(image);
-
-    image = fopen("/switch/roms/rom.gba", "rb");
+    image = fopen("/switch/roms/gbarom.gba", "rb");
 
     if (image == NULL) {
         printf("Error: ROM file couldn't be opened.\n");
@@ -136,6 +126,8 @@ int main(int argc, char* argv[]) {
                     case JOY_LSTICK_RIGHT:  key_input.w |= BTN_R;   break;
                     case JOY_A:             key_input.w |= BTN_A;   break;
                     case JOY_B:             key_input.w |= BTN_B;   break;
+                    case JOY_X:             arm_save("/test.sav");  break;
+                    case JOY_Y:             arm_load("/test.sav");  break;
                     case JOY_L:             key_input.w |= BTN_LT;  break;
                     case JOY_R:             key_input.w |= BTN_RT;  break;
                     case JOY_MINUS:         key_input.w |= BTN_SEL; break;

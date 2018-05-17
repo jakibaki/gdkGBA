@@ -1,7 +1,10 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "arm.h"
 #include "arm_mem.h"
+
+#include "dma.h"
 
 #include "io.h"
 #include "timer.h"
@@ -3134,6 +3137,212 @@ void arm_init() {
     arm_cycles  = 0;
 
     update_ws();
+}
+
+void arm_save(char* filename) {
+    FILE* out = fopen(filename, "wb");
+    fwrite(bios, 1, 0x4000, out);
+    fwrite(wram, 1, 0x40000, out);
+    fwrite(iwram, 1, 0x8000, out);
+    fwrite(pram, 1, 0x400, out); 
+    fwrite(vram, 1, 0x18000, out);
+    fwrite(oam, 1, 0x400, out);
+    fwrite(rom, 1, 0x2000000, out);
+    fwrite(eeprom, 1, 0x2000, out);
+    fwrite(sram, 1, 0x10000, out);
+    fwrite(flash, 1, 0x20000, out);
+
+    fwrite(palette, sizeof(uint32_t), 0x200, out);
+    fwrite(&bios_op, sizeof(uint32_t), 1, out);
+    fwrite(&cart_rom_size, sizeof(int64_t), 1, out);
+    fwrite(&cart_rom_mask, sizeof(uint32_t), 1, out);
+    fwrite(&eeprom_idx, sizeof(uint16_t), 1, out);
+
+    fwrite(&arm_r, sizeof(arm_regs_t), 1, out);
+    fwrite(&arm_op, sizeof(uint32_t), 1, out);
+    fwrite(arm_pipe, sizeof(uint32_t), 2, out);
+    fwrite(&arm_cycles, sizeof(uint32_t), 1, out);
+    fwrite(&int_halt, sizeof(bool), 1, out);
+    fwrite(&pipe_reload, sizeof(bool), 1, out);
+
+
+    fwrite(tmr, sizeof(tmr_t), 4, out);
+    fwrite(&r_cnt, sizeof(io_reg), 1, out);
+    fwrite(&sio_cnt, sizeof(io_reg), 1, out);
+    fwrite(&sio_data8, sizeof(io_reg), 1, out);
+    fwrite(&sio_data32, sizeof(io_reg), 1, out);
+    fwrite(&key_input, sizeof(io_reg), 1, out);
+    fwrite(&int_enb, sizeof(io_reg), 1, out);
+    fwrite(&int_ack, sizeof(io_reg), 1, out);
+    fwrite(&wait_cnt, sizeof(io_reg), 1, out);
+    fwrite(&int_enb_m, sizeof(io_reg), 1, out);
+    fwrite(ws_n, sizeof(uint8_t), 4, out);
+    fwrite(ws_s, sizeof(uint8_t), 4, out);
+    fwrite(ws_n_arm, sizeof(uint8_t), 4, out);
+    fwrite(ws_s_arm, sizeof(uint8_t), 4, out);
+    fwrite(ws_n_t16, sizeof(uint8_t), 4, out);
+    fwrite(ws_s_t16, sizeof(uint8_t), 4, out);
+    fwrite(&post_boot, sizeof(uint8_t), 1, out);
+    fwrite(&io_open_bus, sizeof(bool), 1, out);
+
+    fwrite(&disp_cnt, sizeof(io_reg), 1, out);
+    fwrite(&green_inv, sizeof(io_reg), 1, out);
+    fwrite(&disp_stat, sizeof(io_reg), 1, out);
+    fwrite(&v_count, sizeof(io_reg), 1, out);
+    fwrite(bg, sizeof(bg_t), 4, out);
+    fwrite(bg_pa, sizeof(io_reg), 4, out);
+    fwrite(bg_pb, sizeof(io_reg), 4, out);
+    fwrite(bg_pc, sizeof(io_reg), 4, out);
+    fwrite(bg_pd, sizeof(io_reg), 4, out);
+    fwrite(bg_refxe, sizeof(io_reg), 4, out);
+    fwrite(bg_refye, sizeof(io_reg), 4, out);
+    fwrite(bg_refxi, sizeof(io_reg), 4, out);
+    fwrite(bg_refyi, sizeof(io_reg), 4, out);
+    fwrite(&win_in, sizeof(io_reg), 1, out);
+    fwrite(&win_out, sizeof(io_reg), 1, out);
+    fwrite(&bld_cnt, sizeof(io_reg), 1, out);
+    fwrite(&bld_alpha, sizeof(io_reg), 1, out);
+    fwrite(&bld_bright, sizeof(io_reg), 1, out);
+    fwrite(sqr_ch, sizeof(snd_sqr_ch_t), 2, out);
+    fwrite(&wave_ch, sizeof(snd_wave_ch_t), 1, out);
+    fwrite(&noise_ch, sizeof(snd_noise_ch_t), 1, out);
+    fwrite(&snd_psg_vol, sizeof(io_reg), 1, out);
+    fwrite(&snd_pcm_vol, sizeof(io_reg), 1, out);
+    fwrite(&snd_psg_enb, sizeof(io_reg), 1, out);
+    fwrite(&snd_bias, sizeof(io_reg), 1, out);
+    fwrite(wave_ram, sizeof(uint8_t), 0, out);
+    fwrite(&snd_fifo_a_0, sizeof(int8_t), 1, out);
+    fwrite(&snd_fifo_a_1, sizeof(int8_t), 1, out);
+    fwrite(&snd_fifo_a_2, sizeof(int8_t), 1, out);
+    fwrite(&snd_fifo_a_3, sizeof(int8_t), 1, out);
+    fwrite(&snd_fifo_b_0, sizeof(int8_t), 1, out);
+    fwrite(&snd_fifo_b_1, sizeof(int8_t), 1, out);
+    fwrite(&snd_fifo_b_2, sizeof(int8_t), 1, out);
+    fwrite(&snd_fifo_b_3, sizeof(int8_t), 1, out);
+    fwrite(tmr, sizeof(tmr_t), 4, out);
+    fwrite(&r_cnt, sizeof(io_reg), 1, out);
+    fwrite(&sio_cnt, sizeof(io_reg), 1, out);
+    fwrite(&sio_data8, sizeof(io_reg), 1, out);
+    fwrite(&sio_data32, sizeof(io_reg), 1, out);
+    fwrite(&key_input, sizeof(io_reg), 1, out);
+    fwrite(&int_enb, sizeof(io_reg), 1, out);
+    fwrite(&int_ack, sizeof(io_reg), 1, out);
+    fwrite(&wait_cnt, sizeof(io_reg), 1, out);
+    fwrite(&int_enb_m, sizeof(io_reg), 1, out);
+    fwrite(ws_n, sizeof(uint8_t), 4, out);
+    fwrite(ws_s, sizeof(uint8_t), 4, out);
+    fwrite(ws_n_arm, sizeof(uint8_t), 4, out);
+    fwrite(ws_s_arm, sizeof(uint8_t), 4, out);
+    fwrite(ws_n_t16, sizeof(uint8_t), 4, out);
+    fwrite(ws_s_t16, sizeof(uint8_t), 4, out);
+    fwrite(&post_boot, sizeof(uint8_t), 1, out);
+    fwrite(&io_open_bus, sizeof(bool), 1, out);
+
+    fclose(out);
+}
+
+void arm_load(char* filename) {
+    FILE* in = fopen(filename, "rb");
+    if(in == NULL) return;
+
+    fread(bios, 1, 0x4000, in);
+    fread(wram, 1, 0x40000, in);
+    fread(iwram, 1, 0x8000, in);
+    fread(pram, 1, 0x400, in); 
+    fread(vram, 1, 0x18000, in);
+    fread(oam, 1, 0x400, in);
+    fread(rom, 1, 0x2000000, in);
+    fread(eeprom, 1, 0x2000, in);
+    fread(sram, 1, 0x10000, in);
+    fread(flash, 1, 0x20000, in);
+
+    fread(palette, sizeof(uint32_t), 0x200, in);
+    fread(&bios_op, sizeof(uint32_t), 1, in);
+    fread(&cart_rom_size, sizeof(int64_t), 1, in);
+    fread(&cart_rom_mask, sizeof(uint32_t), 1, in);
+    fread(&eeprom_idx, sizeof(uint16_t), 1, in);
+
+    fread(&arm_r, sizeof(arm_regs_t), 1, in);
+    fread(&arm_op, sizeof(uint32_t), 1, in);
+    fread(arm_pipe, sizeof(uint32_t), 2, in);
+    fread(&arm_cycles, sizeof(uint32_t), 1, in);
+    fread(&int_halt, sizeof(bool), 1, in);
+    fread(&pipe_reload, sizeof(bool), 1, in);
+
+
+    fread(tmr, sizeof(tmr_t), 4, in);
+    fread(&r_cnt, sizeof(io_reg), 1, in);
+    fread(&sio_cnt, sizeof(io_reg), 1, in);
+    fread(&sio_data8, sizeof(io_reg), 1, in);
+    fread(&sio_data32, sizeof(io_reg), 1, in);
+    fread(&key_input, sizeof(io_reg), 1, in);
+    fread(&int_enb, sizeof(io_reg), 1, in);
+    fread(&int_ack, sizeof(io_reg), 1, in);
+    fread(&wait_cnt, sizeof(io_reg), 1, in);
+    fread(&int_enb_m, sizeof(io_reg), 1, in);
+    fread(ws_n, sizeof(uint8_t), 4, in);
+    fread(ws_s, sizeof(uint8_t), 4, in);
+    fread(ws_n_arm, sizeof(uint8_t), 4, in);
+    fread(ws_s_arm, sizeof(uint8_t), 4, in);
+    fread(ws_n_t16, sizeof(uint8_t), 4, in);
+    fread(ws_s_t16, sizeof(uint8_t), 4, in);
+    fread(&post_boot, sizeof(uint8_t), 1, in);
+    fread(&io_open_bus, sizeof(bool), 1, in);
+
+    fread(&disp_cnt, sizeof(io_reg), 1, in);
+    fread(&green_inv, sizeof(io_reg), 1, in);
+    fread(&disp_stat, sizeof(io_reg), 1, in);
+    fread(&v_count, sizeof(io_reg), 1, in);
+    fread(bg, sizeof(bg_t), 4, in);
+    fread(bg_pa, sizeof(io_reg), 4, in);
+    fread(bg_pb, sizeof(io_reg), 4, in);
+    fread(bg_pc, sizeof(io_reg), 4, in);
+    fread(bg_pd, sizeof(io_reg), 4, in);
+    fread(bg_refxe, sizeof(io_reg), 4, in);
+    fread(bg_refye, sizeof(io_reg), 4, in);
+    fread(bg_refxi, sizeof(io_reg), 4, in);
+    fread(bg_refyi, sizeof(io_reg), 4, in);
+    fread(&win_in, sizeof(io_reg), 1, in);
+    fread(&win_out, sizeof(io_reg), 1, in);
+    fread(&bld_cnt, sizeof(io_reg), 1, in);
+    fread(&bld_alpha, sizeof(io_reg), 1, in);
+    fread(&bld_bright, sizeof(io_reg), 1, in);
+    fread(sqr_ch, sizeof(snd_sqr_ch_t), 2, in);
+    fread(&wave_ch, sizeof(snd_wave_ch_t), 1, in);
+    fread(&noise_ch, sizeof(snd_noise_ch_t), 1, in);
+    fread(&snd_psg_vol, sizeof(io_reg), 1, in);
+    fread(&snd_pcm_vol, sizeof(io_reg), 1, in);
+    fread(&snd_psg_enb, sizeof(io_reg), 1, in);
+    fread(&snd_bias, sizeof(io_reg), 1, in);
+    fread(wave_ram, sizeof(uint8_t), 0, in);
+    fread(&snd_fifo_a_0, sizeof(int8_t), 1, in);
+    fread(&snd_fifo_a_1, sizeof(int8_t), 1, in);
+    fread(&snd_fifo_a_2, sizeof(int8_t), 1, in);
+    fread(&snd_fifo_a_3, sizeof(int8_t), 1, in);
+    fread(&snd_fifo_b_0, sizeof(int8_t), 1, in);
+    fread(&snd_fifo_b_1, sizeof(int8_t), 1, in);
+    fread(&snd_fifo_b_2, sizeof(int8_t), 1, in);
+    fread(&snd_fifo_b_3, sizeof(int8_t), 1, in);
+    fread(tmr, sizeof(tmr_t), 4, in);
+    fread(&r_cnt, sizeof(io_reg), 1, in);
+    fread(&sio_cnt, sizeof(io_reg), 1, in);
+    fread(&sio_data8, sizeof(io_reg), 1, in);
+    fread(&sio_data32, sizeof(io_reg), 1, in);
+    fread(&key_input, sizeof(io_reg), 1, in);
+    fread(&int_enb, sizeof(io_reg), 1, in);
+    fread(&int_ack, sizeof(io_reg), 1, in);
+    fread(&wait_cnt, sizeof(io_reg), 1, in);
+    fread(&int_enb_m, sizeof(io_reg), 1, in);
+    fread(ws_n, sizeof(uint8_t), 4, in);
+    fread(ws_s, sizeof(uint8_t), 4, in);
+    fread(ws_n_arm, sizeof(uint8_t), 4, in);
+    fread(ws_s_arm, sizeof(uint8_t), 4, in);
+    fread(ws_n_t16, sizeof(uint8_t), 4, in);
+    fread(ws_s_t16, sizeof(uint8_t), 4, in);
+    fread(&post_boot, sizeof(uint8_t), 1, in);
+    fread(&io_open_bus, sizeof(bool), 1, in);
+
+    fclose(in);
 }
 
 void arm_uninit() {

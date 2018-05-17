@@ -119,3 +119,6 @@ void arm_int(uint32_t address, int8_t mode);
 void arm_check_irq();
 
 void arm_reset();
+
+void arm_save(char* filename);
+void arm_load(char* filename);
