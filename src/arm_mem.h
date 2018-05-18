@@ -1,7 +1,7 @@
 #include <stdint.h>
 
 char savegamepath[110];
-
+int lastflashused;
 
 uint8_t *bios;
 uint8_t *wram;

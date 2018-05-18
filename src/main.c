@@ -147,6 +147,10 @@ int main(int argc, char* argv[]) {
     getFile(filename);
     sprintf(savegamepath, "%s.sav", filename);
 
+    char savestatepath[110];
+    sprintf(savestatepath, "%s.savegame", filename);
+
+
     arm_init();
     sdl_init();
 
@@ -185,9 +189,14 @@ int main(int argc, char* argv[]) {
 
     bool run = true;
     bool startDown = false;
+    lastflashused = -1;
 
     while (run) {
         run_frame();
+
+        if(lastflashused-- == 0) {
+            arm_save(savegamepath);
+        }
 
         SDL_Event event;
 
@@ -208,15 +217,15 @@ int main(int argc, char* argv[]) {
                     case JOY_ZL:
                     case JOY_L:             
                         if(startDown)
-                            //arm_load(savegamepath);
-                        key_input.w &= ~BTN_LT;  
+                            arm_loadstate(savestatepath);
+                        else
+                            key_input.w &= ~BTN_LT;  
                         break;
                     case JOY_ZR:
                     case JOY_R:           
-                        if(startDown)
-                            arm_save(savegamepath);
-                        else
-                            key_input.w &= ~BTN_RT;  
+                        //if(startDown)
+                            //arm_save(savegamepath);
+                        key_input.w &= ~BTN_RT;  
                         break;
                     case JOY_MINUS:         key_input.w &= ~BTN_SEL; break;
                     case JOY_PLUS:          key_input.w &= ~BTN_STA; startDown = true; break;

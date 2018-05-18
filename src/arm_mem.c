@@ -352,6 +352,7 @@ static void eeprom_write(uint32_t address, uint8_t offset, uint8_t value) {
 }
 
 static void flash_write(uint32_t address, uint8_t value) {
+    lastflashused = 30;
     if (flash_mode == WRITE) {
         flash[flash_bank | (address & 0xffff)] = value;
         flash_mode = IDLE;
