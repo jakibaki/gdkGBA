@@ -31,7 +31,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	gdkGBA
 BUILD		:=	build
-OUTDIR	:= out
+OUTDIR		:= out
 SOURCES		:=	src
 DATA		:=	dat
 INCLUDES	:=	include
