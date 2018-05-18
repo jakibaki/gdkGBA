@@ -1,5 +1,8 @@
 #include <stdint.h>
 
+char savegamepath[110];
+
+
 uint8_t *bios;
 uint8_t *wram;
 uint8_t *iwram;

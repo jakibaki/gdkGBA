@@ -3141,6 +3141,20 @@ void arm_init() {
 
 void arm_save(char* filename) {
     FILE* out = fopen(filename, "wb");
+    fwrite(flash, 1, 0x20000, out);
+    fclose(out);
+}
+
+void arm_load(char* filename) {
+    FILE* in = fopen(filename, "rb");
+    if(in == NULL) return;
+
+    fread(flash, 1, 0x20000, in);
+    fclose(in);
+}
+
+void arm_savestate(char* filename) {
+    FILE* out = fopen(filename, "wb");
 
     fwrite(bios, 1, 0x4000, out);
     fwrite(wram, 1, 0x40000, out);
@@ -3228,7 +3242,7 @@ void arm_save(char* filename) {
     fclose(out);
 }
 
-void arm_load(char* filename) {
+void arm_loadstate(char* filename) {
     FILE* in = fopen(filename, "rb");
     if(in == NULL) return;
 

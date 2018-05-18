@@ -144,17 +144,20 @@ void getFile(char* curFile)
 int main(int argc, char* argv[]) {
     
     char filename[100];
-    char savegamepath[110];
     getFile(filename);
-    sprintf(savegamepath, "%s.savegame", filename);
+    sprintf(savegamepath, "%s.sav", filename);
 
     arm_init();
     sdl_init();
 
 
+    FILE* biosfile = fopen("/switch/gba_bios.bin", "rb");
 
-    memcpy(bios, gba_bios, 16384);
-
+    if(biosfile != NULL) {
+        fread(bios, 16384, 1, biosfile);
+    } else {
+        memcpy(bios, gba_bios, 16384);
+    }
 
     FILE* image = fopen(filename, "rb");
 
@@ -178,6 +181,7 @@ int main(int argc, char* argv[]) {
     fclose(image);
 
     arm_reset();
+    arm_load(savegamepath);
 
     bool run = true;
     bool startDown = false;
@@ -204,7 +208,7 @@ int main(int argc, char* argv[]) {
                     case JOY_ZL:
                     case JOY_L:             
                         if(startDown)
-                            arm_load(savegamepath);
+                            //arm_load(savegamepath);
                         key_input.w &= ~BTN_LT;  
                         break;
                     case JOY_ZR:

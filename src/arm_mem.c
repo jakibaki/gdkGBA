@@ -354,11 +354,9 @@ static void eeprom_write(uint32_t address, uint8_t offset, uint8_t value) {
 static void flash_write(uint32_t address, uint8_t value) {
     if (flash_mode == WRITE) {
         flash[flash_bank | (address & 0xffff)] = value;
-
         flash_mode = IDLE;
     } else if (flash_mode == BANK_SWITCH && address == 0x0e000000) {
         flash_bank = (value & 1) << 16;
-
         flash_mode = IDLE;
     } else if (sram[0x5555] == 0xaa && sram[0x2aaa] == 0x55) {
         if (address == 0x0e005555) {
@@ -397,7 +395,6 @@ static void flash_write(uint32_t address, uint8_t value) {
             for (idx = bank_s; idx < bank_e; idx++) {
                 flash[flash_bank | idx] = 0xff;
             }
-
             flash_mode = IDLE;
         }
     }
