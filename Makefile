@@ -29,7 +29,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 #     - icon.jpg
 #     - <libnx folder>/default_icon.jpg
 #---------------------------------------------------------------------------------
-TARGET		:=	$(notdir $(CURDIR))
+TARGET		:=	gdkGBA
 BUILD		:=	build
 OUTDIR	:= out
 SOURCES		:=	src
