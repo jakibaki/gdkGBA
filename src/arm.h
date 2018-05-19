@@ -122,3 +122,4 @@ void arm_reset();
 
 void arm_save(char* filename);
 void arm_load(char* filename);
+void arm_loadstate(char* filename);

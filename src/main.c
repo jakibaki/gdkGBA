@@ -144,17 +144,24 @@ void getFile(char* curFile)
 int main(int argc, char* argv[]) {
     
     char filename[100];
-    char savegamepath[110];
     getFile(filename);
-    sprintf(savegamepath, "%s.savegame", filename);
+    sprintf(savegamepath, "%s.sav", filename);
+
+    char savestatepath[110];
+    sprintf(savestatepath, "%s.savegame", filename);
+
 
     arm_init();
     sdl_init();
 
 
+    FILE* biosfile = fopen("/switch/gba_bios.bin", "rb");
 
-    memcpy(bios, gba_bios, 16384);
-
+    if(biosfile != NULL) {
+        fread(bios, 16384, 1, biosfile);
+    } else {
+        memcpy(bios, gba_bios, 16384);
+    }
 
     FILE* image = fopen(filename, "rb");
 
@@ -178,12 +185,18 @@ int main(int argc, char* argv[]) {
     fclose(image);
 
     arm_reset();
+    arm_load(savegamepath);
 
     bool run = true;
     bool startDown = false;
+    lastsaveused = -1;
 
     while (run) {
         run_frame();
+
+        if(lastsaveused-- == 0) {
+            arm_save(savegamepath);
+        }
 
         SDL_Event event;
 
@@ -204,15 +217,15 @@ int main(int argc, char* argv[]) {
                     case JOY_ZL:
                     case JOY_L:             
                         if(startDown)
-                            arm_load(savegamepath);
-                        key_input.w &= ~BTN_LT;  
+                            arm_loadstate(savestatepath);
+                        else
+                            key_input.w &= ~BTN_LT;  
                         break;
                     case JOY_ZR:
                     case JOY_R:           
-                        if(startDown)
-                            arm_save(savegamepath);
-                        else
-                            key_input.w &= ~BTN_RT;  
+                        //if(startDown)
+                            //arm_save(savegamepath);
+                        key_input.w &= ~BTN_RT;  
                         break;
                     case JOY_MINUS:         key_input.w &= ~BTN_SEL; break;
                     case JOY_PLUS:          key_input.w &= ~BTN_STA; startDown = true; break;
