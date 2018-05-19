@@ -29,9 +29,6 @@ typedef union {
 #define BG2_ENB      (1 << 10)
 #define BG3_ENB      (1 << 11)
 #define OBJ_ENB      (1 << 12)
-#define WIN0_ENB     (1 << 13)
-#define WIN1_ENB     (1 << 14)
-#define WINOBJ_ENB   (1 << 15)
 
 #define VBLK_IRQ  (1 <<  3)
 #define HBLK_IRQ  (1 <<  4)
@@ -60,12 +57,6 @@ io_reg bg_refye[4];
 
 io_reg bg_refxi[4];
 io_reg bg_refyi[4];
-
-io_reg win0_h;
-io_reg win1_h;
-
-io_reg win0_v;
-io_reg win1_v;
 
 io_reg win_in;
 io_reg win_out;
