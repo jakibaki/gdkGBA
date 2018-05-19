@@ -218,13 +218,12 @@ int main(int argc, char* argv[]) {
                     case JOY_L:             
                         if(startDown)
                             arm_loadstate(savestatepath);
-                        else
-                            key_input.w &= ~BTN_LT;  
+                        key_input.w &= ~BTN_LT;  
                         break;
                     case JOY_ZR:
                     case JOY_R:           
-                        //if(startDown)
-                            //arm_save(savegamepath);
+                        if(startDown)
+                            arm_savestate(savestatepath);
                         key_input.w &= ~BTN_RT;  
                         break;
                     case JOY_MINUS:         key_input.w &= ~BTN_SEL; break;
