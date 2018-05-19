@@ -94,10 +94,10 @@ static uint8_t rom_eep_read(uint32_t address, uint8_t offset) {
     if (eeprom_used &&
         ((cart_rom_size >  0x1000000 && (address >>  8) == 0x0dffff) ||
          (cart_rom_size <= 0x1000000 && (address >> 24) == 0x00000d))) {
-         if (!offset) {
+        if (!offset) {
              uint8_t mode = eeprom_buff[0] >> 6;
 
-             switch (mode) {
+            switch (mode) {
                  case EEPROM_WRITE: return 1;
                  case EEPROM_READ: {
                     uint8_t value = 0;
@@ -112,9 +112,9 @@ static uint8_t rom_eep_read(uint32_t address, uint8_t offset) {
                     eeprom_idx++;
 
                     return value;
-                 }
-             }
-         }
+                }
+            }
+        }
     } else {
         return rom_read(address);
     }
@@ -348,11 +348,13 @@ static void eeprom_write(uint32_t address, uint8_t offset, uint8_t value) {
         }
 
         eeprom_used = true;
+        lastsaveused = 30;
     }
 }
 
 static void flash_write(uint32_t address, uint8_t value) {
-    lastflashused = 30;
+    lastsaveused = 30;
+
     if (flash_mode == WRITE) {
         flash[flash_bank | (address & 0xffff)] = value;
         flash_mode = IDLE;
@@ -387,6 +389,7 @@ static void flash_write(uint32_t address, uint8_t value) {
             //writes the specific flash commands to the save memory region
             if (flash_mode || flash_id_mode) {
                 flash_used = true;
+                lastsaveused = 30;
             }
         } else if (flash_mode == ERASE && value == 0x30) {
             uint32_t bank_s = address & 0xf000;

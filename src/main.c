@@ -189,12 +189,12 @@ int main(int argc, char* argv[]) {
 
     bool run = true;
     bool startDown = false;
-    lastflashused = -1;
+    lastsaveused = -1;
 
     while (run) {
         run_frame();
 
-        if(lastflashused-- == 0) {
+        if(lastsaveused-- == 0) {
             arm_save(savegamepath);
         }
 

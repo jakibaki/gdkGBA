@@ -3142,6 +3142,8 @@ void arm_init() {
 void arm_save(char* filename) {
     FILE* out = fopen(filename, "wb");
     fwrite(flash, 1, 0x20000, out);
+    fwrite(eeprom, 1, 0x2000, out);
+    fwrite(sram, 1, 0x10000, out);
     fclose(out);
 }
 
@@ -3150,6 +3152,8 @@ void arm_load(char* filename) {
     if(in == NULL) return;
 
     fread(flash, 1, 0x20000, in);
+    fread(eeprom, 1, 0x2000, in);
+    fread(sram, 1, 0x10000, in);
     fclose(in);
 }
 
