@@ -11,6 +11,10 @@
 #include <dirent.h>
 #include <switch.h>
 
+#ifdef __SWITCH_DEBUG__
+#include <nxlink_print.h>
+#endif
+
 #define JOY_A 0
 #define JOY_B 1
 #define JOY_X 2
@@ -90,26 +94,29 @@ void getFile(char* curFile)
     //Move the cursor to row 16 and column 20 and then prints "Hello World!"
     //To move the cursor you have to print "\x1b[r;cH", where r and c are respectively
     //the row and column where you want your cursor to move
-    printf("\x1b[16;20HSelect a file using the up and down keys.");
-    printf("\x1b[17;20HPress start to run the rom.");
-
-    sprintf(curFile, "Couldn't find any files in that folder!");
     int curIndex = 0;
 
     curIndex = getInd(curFile, curIndex);
     printf("\x1b[18;20H%s", curFile);
     while(appletMainLoop())
-    {
+    {        
         //Scan all the inputs. This should be done once for each frame
         hidScanInput();
 
         //hidKeysDown returns information about which buttons have been just pressed (and they weren't in the previous frame)
         u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+        
+        printf("\x1b[16;20HSelect a file using the up and down keys.");
+        printf("\x1b[17;20HPress start to run the rom.");
+        
+        #ifdef __SWITCH_DEBUG__
+        printf("\x1b[23;20HIF YOU'RE READING THIS JAKIBAKI ACCIDENTIALLY");
+        printf("\x1b[24;20HPUSHED AN DEBUG BUILD!");
+        #endif
+        
 
         if (kDown & KEY_DOWN || kDown & KEY_DDOWN) {
             consoleClear();
-            printf("\x1b[16;20HSelect a file using the up and down keys.");
-            printf("\x1b[17;20HPress start to run the rom.");
             curIndex++;
             curIndex = getInd(curFile, curIndex);
             printf("\x1b[18;20H%s", curFile);
@@ -117,8 +124,6 @@ void getFile(char* curFile)
 
         if (kDown & KEY_UP || kDown & KEY_DUP) {
             consoleClear();
-            printf("\x1b[16;20HSelect a file using the up and down keys.");
-            printf("\x1b[17;20HPress start to run the rom.");
             curIndex--;
             curIndex = getInd(curFile, curIndex);
             printf("\x1b[18;20H%s", curFile);
@@ -150,6 +155,10 @@ int main(int argc, char* argv[]) {
     char savestatepath[110];
     sprintf(savestatepath, "%s.savegame", filename);
 
+    // You can enable debug printing by running make SWITCH_DEBUG=1 and then push the app on your switch with nxlink -s ...
+    #ifdef __SWITCH_DEBUG__
+    nxlink_print_init();
+    #endif
 
     arm_init();
     sdl_init();
