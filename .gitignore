@@ -57,3 +57,7 @@ dkms.conf
 # OS-Files
 ._*
 .DS_STORE
+
+# builds
+build
+out

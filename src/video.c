@@ -189,8 +189,6 @@ static void render_obj(uint8_t prio) {
         if (obj_y + rcy * 2 > 0xff) obj_y -= 0x100;
 
         if (obj_y <= (int32_t)v_count.w && (obj_y + rcy * 2 > v_count.w)) {
-            uint8_t  obj_mode = (attr0 >> 10) & 0x3;
-            bool     mosaic   = (attr0 >> 12) & 0x1;
             bool     is_256   = (attr0 >> 13) & 0x1;
             int16_t  obj_x    = (attr1 >>  0) & 0x1ff;
             bool     flip_x   = (attr1 >> 12) & 0x1;
