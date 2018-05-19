@@ -51,6 +51,7 @@ CFLAGS	:=	-g -Wall -Ofast -ffunction-sections \
 
 CFLAGS	+=	$(INCLUDE) -D__SWITCH__
 
+
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 
 ASFLAGS	:=	-g $(ARCH)
@@ -60,6 +61,11 @@ LIBS	:=	-lSDL2_image -lSDL2_mixer -lSDL2 \
 			-lpng -lz -ljpeg \
 			-lvorbisidec -logg -lmpg123 -lmodplug -lstdc++ \
 			-lnx -lm
+
+ifneq ($(SWITCH_DEBUG),)
+	CFLAGS	+=	$(INCLUDE) -D__SWITCH_DEBUG__
+	LIBS += -lnxlink_print -lnx
+endif
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
