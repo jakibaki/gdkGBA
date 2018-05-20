@@ -163,19 +163,21 @@ int main(int argc, char* argv[]) {
     socketInitializeDefault();
     
     if(!debug_mode) {
-        FILE* testfile = fopen("/testfile", "wb");
-        stdout = testfile;
-        stdout = testfile;
-        
-        unlink("/tmpfile");
+        FILE* fakefile = fopen("/gdkGBA.tmp", "wb");
+        stdout = fakefile;
+        stderr = fakefile;
+        fclose(fakefile);
+        unlink("/gdkGBA.tmp");
         // The emulator crashes if there's something written into stdout or stderr for some reason D:.
-        // Please let me know if you know of a fix (or a better way to get a dummy FILE*)
+        // Please let me know if you know of a better way to fix this
     } else {
         nxlinkStdio();
+        printf("Connected to nxlink :)\n");
     }
 
     arm_init();
     sdl_init();
+    
 
     FILE* biosfile = fopen("/switch/gba_bios.bin", "rb");
 

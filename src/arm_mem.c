@@ -348,12 +348,12 @@ static void eeprom_write(uint32_t address, uint8_t offset, uint8_t value) {
         }
 
         eeprom_used = true;
-        lastsaveused = 30;
+        lastsaveused = 60;
     }
 }
 
 static void flash_write(uint32_t address, uint8_t value) {
-    lastsaveused = 30;
+    lastsaveused = 60;
 
     if (flash_mode == WRITE) {
         flash[flash_bank | (address & 0xffff)] = value;
@@ -389,7 +389,7 @@ static void flash_write(uint32_t address, uint8_t value) {
             //writes the specific flash commands to the save memory region
             if (flash_mode || flash_id_mode) {
                 flash_used = true;
-                lastsaveused = 30;
+                lastsaveused = 60;
             }
         } else if (flash_mode == ERASE && value == 0x30) {
             uint32_t bank_s = address & 0xf000;
