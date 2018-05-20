@@ -152,18 +152,20 @@ int main(int argc, char* argv[]) {
 
     char filename[100];
     getFile(filename);
+    
+    
     sprintf(savegamepath, "%s.sav", filename);
 
     char savestatepath[110];
     sprintf(savestatepath, "%s.savegame", filename);
 
-    arm_init();
-    sdl_init();
-
     if(debug_mode) {
         socketInitializeDefault();
         nxlinkStdio();
     }
+
+    arm_init();
+    sdl_init();
 
     FILE* biosfile = fopen("/switch/gba_bios.bin", "rb");
 
