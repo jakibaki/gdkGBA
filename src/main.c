@@ -8,9 +8,10 @@
 #include "sdl.h"
 #include "video.h"
 
+#include <unistd.h>
+
 #include <dirent.h>
 #include <switch.h>
-
 
 #define JOY_A 0
 #define JOY_B 1
@@ -159,8 +160,17 @@ int main(int argc, char* argv[]) {
     char savestatepath[110];
     sprintf(savestatepath, "%s.savegame", filename);
 
-    if(debug_mode) {
-        socketInitializeDefault();
+    socketInitializeDefault();
+    
+    if(!debug_mode) {
+        FILE* testfile = fopen("/testfile", "wb");
+        stdout = testfile;
+        stdout = testfile;
+        
+        unlink("/tmpfile");
+        // The emulator crashes if there's something written into stdout or stderr for some reason D:.
+        // Please let me know if you know of a fix (or a better way to get a dummy FILE*)
+    } else {
         nxlinkStdio();
     }
 
