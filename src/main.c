@@ -11,9 +11,6 @@
 #include <dirent.h>
 #include <switch.h>
 
-#ifdef __SWITCH_DEBUG__
-#include <nxlink_print.h>
-#endif
 
 #define JOY_A 0
 #define JOY_B 1
@@ -41,6 +38,7 @@
 #define JOY_RSTICK_DOWN 23
 
 const int64_t max_rom_sz = 32 * 1024 * 1024;
+bool debug_mode = 0;
 
 static uint32_t to_pow2(uint32_t val) {
     val--;
@@ -109,11 +107,9 @@ void getFile(char* curFile)
         printf("\x1b[16;20HSelect a file using the up and down keys.");
         printf("\x1b[17;20HPress start to run the rom.");
         
-        #ifdef __SWITCH_DEBUG__
-        printf("\x1b[23;20HIF YOU'RE READING THIS JAKIBAKI ACCIDENTIALLY");
-        printf("\x1b[24;20HPUSHED AN DEBUG BUILD!");
-        #endif
-        
+        if(debug_mode) {
+            printf("\x1b[21;20HWelcome to debug mode!");
+        }
 
         if (kDown & KEY_DOWN || kDown & KEY_DDOWN) {
             consoleClear();
@@ -148,6 +144,12 @@ void getFile(char* curFile)
 
 int main(int argc, char* argv[]) {
     
+    for (int i=0; i<argc; i++) {
+        // nxlink -a 192.168... gdkGBA.nro -s debug
+        if(!strcmp(argv[i],"debug"))
+            debug_mode = true;
+    }
+
     char filename[100];
     getFile(filename);
     sprintf(savegamepath, "%s.sav", filename);
@@ -155,14 +157,13 @@ int main(int argc, char* argv[]) {
     char savestatepath[110];
     sprintf(savestatepath, "%s.savegame", filename);
 
-    // You can enable debug printing by running make SWITCH_DEBUG=1 and then push the app on your switch with nxlink -s ...
-    #ifdef __SWITCH_DEBUG__
-    nxlink_print_init();
-    #endif
-
     arm_init();
     sdl_init();
 
+    if(debug_mode) {
+        socketInitializeDefault();
+        nxlinkStdio();
+    }
 
     FILE* biosfile = fopen("/switch/gba_bios.bin", "rb");
 
