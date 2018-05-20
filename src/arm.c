@@ -3140,7 +3140,12 @@ void arm_init() {
 }
 
 void arm_save(char* filename) {
+    printf("Saving...\n");
     FILE* out = fopen(filename, "wb");
+    if(out == NULL) {
+        printf("Couldn't open savefile! Trying again in 60 frames...\n");
+        lastsaveused = 60;
+    }
     fwrite(flash, 1, 0x20000, out);
     fwrite(eeprom, 1, 0x2000, out);
     fwrite(sram, 1, 0x10000, out);
@@ -3148,6 +3153,7 @@ void arm_save(char* filename) {
 }
 
 void arm_load(char* filename) {
+    printf("Loading save...\n");
     FILE* in = fopen(filename, "rb");
     if(in == NULL) return;
 
