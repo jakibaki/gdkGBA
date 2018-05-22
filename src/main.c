@@ -82,6 +82,62 @@ int getInd(char* curFile, int curIndex) {
     return curIndex;
 }
 
+void drawROMList(int curIndex) //Draws a list of files to the screen
+{
+    DIR* dir;
+    struct dirent* ent;
+
+    int i = 0;
+    int start = curIndex - 15; //Defines when the function starts to draw the list
+    if (start < 0) //Makes sure that it starts at 0, which is needed to make sure that start+20 is always drawn to the screen
+    {
+        start = 0;
+    }
+    
+    dir = opendir("/switch/roms/gba");//Open current-working-directory.
+
+    if (dir==NULL)
+    {
+        printf("\x1b[%d;4H-->%s", 6, "Failed to open dir!");
+    }
+    else
+    {
+        bool working = true;
+        while (working) //While working it runs through the dir list
+        {
+            ent = readdir(dir);
+            if (ent)
+            {
+                if (i >= start)
+                {
+                    if (i < (start+40))
+                    {
+                        if (i == curIndex)
+                        {
+                            printf("\x1b[%d;4H-->%s", 6 + (i - start), ent->d_name);
+                        }
+                        else
+                        {
+                            printf("\x1b[%d;4H%s", 6 + (i - start), ent->d_name);
+                        }
+                    }
+                    else
+                    {
+                        closedir(dir);
+                        working = false;
+                    }
+                }
+            }
+            else
+            {
+                closedir(dir);
+                working = false;
+            }
+            i++;
+        }
+    }
+}
+
 void getFile(char* curFile)
 {
  
@@ -94,9 +150,13 @@ void getFile(char* curFile)
     //To move the cursor you have to print "\x1b[r;cH", where r and c are respectively
     //the row and column where you want your cursor to move
     int curIndex = 0;
+    int heldTime = 0;
+    int heldDelay = 8;
 
     curIndex = getInd(curFile, curIndex);
-    printf("\x1b[18;20H%s", curFile);
+
+    drawROMList(curIndex);//Draws the ROMList at start
+
     while(appletMainLoop())
     {        
         //Scan all the inputs. This should be done once for each frame
@@ -104,28 +164,61 @@ void getFile(char* curFile)
 
         //hidKeysDown returns information about which buttons have been just pressed (and they weren't in the previous frame)
         u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+        u64 kHeld = hidKeysHeld(CONTROLLER_P1_AUTO);
         
-        printf("\x1b[16;20HSelect a file using the up and down keys.");
-        printf("\x1b[17;20HPress start to run the rom.");
+        printf("\x1b[3;4HSelect a file using the up and down keys.");
+        printf("\x1b[4;4HPress start to run the rom.");
         
         if(debug_mode) {
-            printf("\x1b[21;20HWelcome to debug mode!");
+            printf("\x1b[2;4HWelcome to debug mode!");
         }
 
         if (kDown & KEY_DOWN || kDown & KEY_DDOWN) {
             consoleClear();
             curIndex++;
             curIndex = getInd(curFile, curIndex);
-            printf("\x1b[18;20H%s", curFile);
+            drawROMList(curIndex);
         }
 
         if (kDown & KEY_UP || kDown & KEY_DUP) {
             consoleClear();
             curIndex--;
             curIndex = getInd(curFile, curIndex);
-            printf("\x1b[18;20H%s", curFile);
+            drawROMList(curIndex);
         }
 
+        if (kHeld & KEY_DOWN || kHeld & KEY_DDOWN)
+        {
+            if (heldTime < heldDelay)
+            {
+                heldTime++;
+            }
+            else
+            {
+                consoleClear();
+                curIndex++;
+                curIndex = getInd(curFile, curIndex);
+                drawROMList(curIndex);
+            }
+        }
+        else if (kHeld & KEY_UP || kHeld & KEY_DUP)
+        {
+            if (heldTime < heldDelay)
+            {
+                heldTime++;
+            }
+            else
+            {
+                consoleClear();
+                curIndex--;
+                curIndex = getInd(curFile, curIndex);
+                drawROMList(curIndex);
+            }
+        }
+        else
+        {
+            heldTime = 0;
+        }
 
         if (kDown & KEY_PLUS || kDown & KEY_A) {
             
