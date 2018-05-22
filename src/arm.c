@@ -3144,7 +3144,7 @@ void arm_save(char* filename) {
     FILE* out = fopen(filename, "wb");
     if(out == NULL) {
         printf("Couldn't open savefile! Trying again in 60 frames...\n");
-        lastsaveused = 60;
+        lastsaveused = 30;
     }
     fwrite(flash, 1, 0x20000, out);
     fwrite(eeprom, 1, 0x2000, out);
