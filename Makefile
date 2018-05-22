@@ -40,7 +40,7 @@ ROMFS       :=  romfs
 
 APP_TITLE   := gdkGBA
 APP_AUTHOR  := gdkchan (ported by jakibaki)
-APP_VERSION := 8.6EXP
+APP_VERSION := 9.0EXP
 
 #---------------------------------------------------------------------------------
 # options for code generation
